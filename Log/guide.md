@@ -1,1 +1,1 @@
-Here saved the debug records which can be drew by the ../log/plot.py. The record function can be found frm the MACRO: DEBUG_FILE_DIR(name) in common_lib.h.
+W tym miejscu zapisywane są rekordy diagnostyczne, które można wykreślić przy użyciu skryptu `../log/plot.py`. Funkcja rejestrowania jest dostępna poprzez makro: `DEBUG_FILE_DIR(name)` zdefiniowane w pliku `common_lib.h`.

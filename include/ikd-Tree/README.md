@@ -1,2 +1,2 @@
 # ikd-Tree
-ikd-Tree is an incremental k-d tree for robotic applications.
+ikd-Tree to inkrementalne drzewo k-d przeznaczone do zastosowań robotycznych.

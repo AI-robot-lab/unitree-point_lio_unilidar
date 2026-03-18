@@ -1,38 +1,38 @@
 ## IKFoM 
-**IKFoM** (Iterated Kalman Filters on Manifolds) is a computationally efficient and convenient toolkit for deploying iterated Kalman filters on various robotic systems, especially systems operating on high-dimension manifold. It implements a manifold-embedding Kalman filter which separates the manifold structures from system descriptions and is able to be used by only defining the system in a canonical form and calling the respective steps accordingly. The current implementation supports the full iterated Kalman filtering for systems on manifold <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbb{R}^m\times&space;SO(3)\times\cdots\times&space;SO(3)\times\mathbb{S}^2\times\cdots\times\mathbb{S}^2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbb{R}^m\times&space;SO(3)\times\cdots\times&space;SO(3)\times\mathbb{S}^2\times\cdots\times\mathbb{S}^2" title="\mathbb{R}^m\times SO(3)\times\cdots\times SO(3)\times\mathbb{S}^2\times\cdots\times\mathbb{S}^2" /></a> and any of its sub-manifolds, and it is extendable to other types of manifold when necessary.
+**IKFoM** (Iterated Kalman Filters on Manifolds) to wydajne obliczeniowo i wygodne narzędzie do wdrażania iterowanych filtrów Kalmana w różnych systemach robotycznych, szczególnie w systemach działających na rozmaitościach wysokowymiarowych. Implementuje filtr Kalmana z osadzeniem rozmaitości, który oddziela struktury rozmaitości od opisów systemu i może być używany wyłącznie przez zdefiniowanie systemu w kanonicznej postaci i odpowiednie wywoływanie poszczególnych kroków. Bieżąca implementacja obsługuje pełne iterowane filtrowanie Kalmana dla systemów na rozmaitości <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbb{R}^m\times&space;SO(3)\times\cdots\times&space;SO(3)\times\mathbb{S}^2\times\cdots\times\mathbb{S}^2" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbb{R}^m\times&space;SO(3)\times\cdots\times&space;SO(3)\times\mathbb{S}^2\times\cdots\times\mathbb{S}^2" title="\mathbb{R}^m\times SO(3)\times\cdots\times SO(3)\times\mathbb{S}^2\times\cdots\times\mathbb{S}^2" /></a> oraz dowolnych jej podrozmaitości, a w razie potrzeby może być rozszerzona o inne typy rozmaitości.
 
 
-**Developers**
+**Twórcy**
 
 [Dongjiao He](https://github.com/Joanna-HE)
 
-**Our related video**: https://youtu.be/sz_ZlDkl6fA
+**Nasze powiązane wideo**: https://youtu.be/sz_ZlDkl6fA
 
-## 1. Prerequisites
+## 1. Wymagania wstępne
 
 ### 1.1. **Eigen && Boost**
-Eigen  >= 3.3.4, Follow [Eigen Installation](http://eigen.tuxfamily.org/index.php?title=Main_Page).
+Eigen  >= 3.3.4, postępuj zgodnie z [instrukcją instalacji Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page).
 
 Boost >= 1.65.
 
-## 2. Usage when the measurement is of constant dimension and type.
-Clone the repository:
+## 2. Użycie, gdy pomiar ma stały wymiar i typ.
+Sklonuj repozytorium:
 
 ```
     git clone https://github.com/hku-mars/IKFoM.git
 ```
 
-1. include the necessary head file:
+1. Dołącz wymagany plik nagłówkowy:
 ```
 #include<esekfom/esekfom.hpp>
 ```
-2. Select and instantiate the primitive manifolds:
+2. Wybierz i utwórz instancje prymitywnych rozmaitości:
 ```
     typedef MTK::SO3<double> SO3; // scalar type of variable: double
     typedef MTK::vect<3, double> vect3; // dimension of the defined Euclidean variable: 3
     typedef MTK::S2<double, 98, 10, 1> S2; // length of the S2 variable: 98/10; choose e1 as the original point of rotation: 1
 ```
-3. Build system state, input and measurement as compound manifolds which are composed of the primitive manifolds:
+3. Zbuduj stan systemu, wejście i pomiar jako rozmaitości złożone składające się z prymitywnych rozmaitości:
 ``` 
 MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ((vect3, pos)) // ((primitive manifold type, name of variable))
@@ -45,7 +45,7 @@ MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ((vect3, offset_T_L_I)) 
 );
 ```
-4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> that is defined as <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"><see here>, and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, where w=0 could be left out:
+4. Zaimplementuj pole wektorowe <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> zdefiniowane jako <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"><zob. tutaj>, oraz jego różniczkowanie <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, gdzie w=0 może zostać pominięte:
 ```
 Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {
 	Eigen::Matrix<double, state_length, 1> res = Eigen::Matrix<double, state_length, 1>::Zero();
@@ -65,9 +65,9 @@ Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, const inp
 	return cov;
 }
 ```
-Those functions would be called during the ekf state predict
+Funkcje te będą wywoływane podczas predykcji stanu ekf
 
-5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
+5. Zaimplementuj równanie wyjściowe <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> oraz jego różniczkowanie <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 measurement h(state &s, bool &valid) // the iteration stops before convergence whenever the user set valid as false
 {
@@ -80,40 +80,40 @@ measurement h(state &s, bool &valid) // the iteration stops before convergence w
 Eigen::Matrix<double, measurement_dof, state_dof> dh_dx(state &s) {} 
 Eigen::Matrix<double, measurement_dof, measurement_noise_dof> dh_dv(state &s) {}
 ```
-Those functions would be called during the ekf state update
+Funkcje te będą wywoływane podczas aktualizacji stanu ekf
 
-6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+6. Utwórz instancję obiektu **esekf** **kf** i zainicjalizuj go początkowym lub domyślnym stanem i macierzą kowariancji.
 
-(1) initial state and covariance:
+(1) stan początkowy i macierz kowariancji:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf(init_state,init_P);
 ```
-(2) default state and covariance:
+(2) domyślny stan i macierz kowariancji:
 ```
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf;
 ```
-where **process_noise_dof** is the dimension of process noise, with the type of std int, and so for **measurement_noise_dof**.
+gdzie **process_noise_dof** to wymiar szumu procesu, typ std int, analogicznie dla **measurement_noise_dof**.
 
-7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
+7. Przekaż zdefiniowane modele, maksymalną liczbę iteracji std int **Maximum_iter** oraz tablicę std do testowania zbieżności **epsi** do obiektu **esekf**:
 ```
 double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. W czasie działania, po otrzymaniu wejścia **in** z przedziałem czasowym **dt**, wykonywana jest propagacja:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
-9. Once a measurement **z** is received, an iterated update is executed:
+9. Po otrzymaniu pomiaru **z** wykonywana jest iterowana aktualizacja:
 ```
 kf.update_iterated(z, R); // measurement noise covariance: R, an Eigen matrix
 ```
-*Remarks(1):*
-- We also combine the output equation and its differentiation into an union function, whose usage is the same as the above steps 1-4, and steps 5-9 are shown as follows.
+*Uwagi(1):*
+- Łączymy również równanie wyjściowe i jego różniczkowanie w jedną funkcję wspólną; jej użycie jest takie samo jak powyższe kroki 1–4, a kroki 5–9 przedstawione są poniżej.
 
-5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
+5. Zaimplementuj równanie wyjściowe <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> oraz jego różniczkowanie <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 measurement h_share(state &s, esekfom::share_datastruct<state, measurement, measurement_noise_dof> &share_data) 
 {
@@ -129,37 +129,37 @@ measurement h_share(state &s, esekfom::share_datastruct<state, measurement, meas
 	return h_;
 }
 ```
-This function would be called during ekf state update, and the output function and its derivatives, the measurement and the measurement noise would be obtained from this one union function
+Funkcja ta będzie wywoływana podczas aktualizacji stanu ekf; z tej jednej funkcji wspólnej pobierana jest funkcja wyjściowa wraz z jej pochodnymi, pomiar i szum pomiaru.
 
-6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+6. Utwórz instancję obiektu **esekf** **kf** i zainicjalizuj go początkowym lub domyślnym stanem i macierzą kowariancji.
 
-(1) initial state and covariance:
+(1) stan początkowy i macierz kowariancji:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf(init_state,init_P);
 ```
-(2) default state and covariance:
+(2) domyślny stan i macierz kowariancji:
 ```
 esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_dof> kf;
 ```
-7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
+7. Przekaż zdefiniowane modele, maksymalną liczbę iteracji std int **Maximum_iter** oraz tablicę std do testowania zbieżności **epsi** do obiektu **esekf**:
 ```
 double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_share(f, df_dx, df_dw, h_share, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. W czasie działania, po otrzymaniu wejścia **in** z przedziałem czasowym **dt**, wykonywana jest propagacja:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q
 ```
-9. Once a measurement **z** is received, an iterated update is executed:
+9. Po otrzymaniu pomiaru **z** wykonywana jest iterowana aktualizacja:
 ```
 kf.update_iterated_share();
 ```
 
-*Remarks(2):*
-- The value of the state **x** and the covariance **P** are able to be changed by functions **change_x()** and **change_P()**:
+*Uwagi(2):*
+- Wartości stanu **x** i macierzy kowariancji **P** można zmieniać przy użyciu funkcji **change_x()** i **change_P()**:
 ```
 state set_x;
 kf.change_x(set_x);
@@ -167,25 +167,25 @@ esekfom::esekf<state, process_noise_dof, input, measurement, measurement_noise_d
 kf.change_P(set_P);
 ```
 
-## 3. Usage when the measurement is an Eigen vector of changing dimension.
+## 3. Użycie, gdy pomiar jest wektorem Eigen o zmiennym wymiarze.
 
-Clone the repository:
+Sklonuj repozytorium:
 
 ```
     git clone https://github.com/hku-mars/IKFoM.git
 ```
 
-1. include the necessary head file:
+1. Dołącz wymagany plik nagłówkowy:
 ```
 #include<esekfom/esekfom.hpp>
 ```
-2. Select and instantiate the primitive manifolds:
+2. Wybierz i utwórz instancje prymitywnych rozmaitości:
 ```
     typedef MTK::SO3<double> SO3; // scalar type of variable: double
     typedef MTK::vect<3, double> vect3; // dimension of the defined Euclidean variable: 3
     typedef MTK::S2<double, 98, 10, 1> S2; // length of the S2 variable: 98/10; choose e1 as the original point of rotation: 1
 ```
-3. Build system state and input as compound manifolds which are composed of the primitive manifolds:
+3. Zbuduj stan systemu i wejście jako rozmaitości złożone składające się z prymitywnych rozmaitości:
 ``` 
 MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ((vect3, pos)) // ((primitive manifold type, name of variable))
@@ -198,7 +198,7 @@ MTK_BUILD_MANIFOLD(state, // name of compound manifold: state
 ((vect3, offset_T_L_I)) 
 );
 ```
-4. Implement the vector field <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> that is defined as <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"> <see here>, and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, where w=0 could be left out:
+4. Zaimplementuj pole wektorowe <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)" title="\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)" /></a> zdefiniowane jako <a href="https://latex.codecogs.com/svg.image?\mathbf{x}_{k&plus;1}&space;=&space;\mathbf{x}_k\oplus\Delta&space;t\mathbf{f}(\mathbf{x}_k,&space;\mathbf{u}_k,&space;\mathbf{w}_k);\hat{\mathbf{x}}_{k&plus;1}&space;=&space;\hat{\mathbf{x}}_k\oplus\Delta&space;t\mathbf{f}(\hat{\mathbf{x}}_k,&space;\mathbf{u}_k,&space;\mathbf{0})"> <zob. tutaj>, oraz jego różniczkowanie <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{u},&space;\mathbf{0}\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{u}, \mathbf{0}\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\mathbf{f}\left(\mathbf{x},&space;\mathbf{u},&space;\mathbf{w}\right)}{\partial\mathbf{w}}" title="\frac{\partial\mathbf{f}\left(\mathbf{x}, \mathbf{u}, \mathbf{w}\right)}{\partial\mathbf{w}}" /></a>, gdzie w=0 może zostać pominięte:
 ```
 Eigen::Matrix<double, state_length, 1> f(state &s, const input &i) {
 	Eigen::Matrix<double, state_length, 1> res = Eigen::Matrix<double, state_length, 1>::Zero();
@@ -218,9 +218,9 @@ Eigen::Matrix<double, state_length, process_noise_dof> df_dw(state &s, const inp
 	return cov;
 }
 ```
-Those functions would be called during ekf state predict
+Funkcje te będą wywoływane podczas predykcji stanu ekf
 
-5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
+5. Zaimplementuj równanie wyjściowe <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> oraz jego różniczkowanie <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 Eigen::Matrix<double, Eigen::Dynamic, 1> h(state &s, bool &valid) //the iteration stops before convergence when valid is false {
 	if (condition){ valid = false; 
@@ -232,39 +232,39 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> h(state &s, bool &valid) //the iteratio
 Eigen::Matrix<double, Eigen::Dynamic, state_dof> dh_dx(state &s) {} 
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> dh_dv(state &s) {}
 ```
-Those functions would be called during ekf state update
+Funkcje te będą wywoływane podczas aktualizacji stanu ekf
 
-6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
+6. Utwórz instancję obiektu **esekf** **kf** i zainicjalizuj go początkowym lub domyślnym stanem i macierzą kowariancji.
 
-(1) initial state and covariance:
+(1) stan początkowy i macierz kowariancji:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
 ```
-(2) default state and covariance:
+(2) domyślny stan i macierz kowariancji:
 ```
 esekfom::esekf<state, process_noise_dof, input> kf;
 ```
-where **process_noise_dof** is the dimension of process noise, with the type of std int, and so for **measurement_noise_dof**
+gdzie **process_noise_dof** to wymiar szumu procesu, typ std int, analogicznie dla **measurement_noise_dof**
 
-7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
+7. Przekaż zdefiniowane modele, maksymalną liczbę iteracji std int **Maximum_iter** oraz tablicę std do testowania zbieżności **epsi** do obiektu **esekf**:
 ```
 double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn(f, df_dx, df_dw, h, dh_dx, dh_dv, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. W czasie działania, po otrzymaniu wejścia **in** z przedziałem czasowym **dt**, wykonywana jest propagacja:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
-9. Once a measurement **z** is received, an iterated update is executed:
+9. Po otrzymaniu pomiaru **z** wykonywana jest iterowana aktualizacja:
 ```
 kf.update_iterated_dyn(z, R); // measurement noise covariance: R, an Eigen matrix
 ```
-*Remarks(1):*
-- We also combine the output equation and its differentiation into an union function, whose usage is the same as the above steps 1-4, and steps 5-9 are shown as follows.
-5. Implement the output equation <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> and its differentiation <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
+*Uwagi(1):*
+- Łączymy również równanie wyjściowe i jego różniczkowanie w jedną funkcję wspólną; jej użycie jest takie samo jak powyższe kroki 1–4, a kroki 5–9 przedstawione są poniżej.
+5. Zaimplementuj równanie wyjściowe <a href="https://www.codecogs.com/eqnedit.php?latex=\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)" title="\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)" /></a> oraz jego różniczkowanie <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x},&space;\mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}\boxplus\delta\mathbf{x}, \mathbf{0}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\delta\mathbf{x}}" /></a>, <a href="https://www.codecogs.com/eqnedit.php?latex=\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\frac{\partial\left(\mathbf{h}\left(\mathbf{x},&space;\mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" title="\frac{\partial\left(\mathbf{h}\left(\mathbf{x}, \mathbf{v}\right)\boxminus\mathbf{h}\left(\mathbf{x},\mathbf{0}\right)\right)}{\partial\mathbf{v}}" /></a>:
 ```
 Eigen::Matrix<double, Eigen::Dynamic, 1> h_dyn_share(state &s, esekfom::dyn_share_datastruct<double> &dyn_share_data) 
 {
@@ -279,36 +279,36 @@ Eigen::Matrix<double, Eigen::Dynamic, 1> h_dyn_share(state &s, esekfom::dyn_shar
 	h_(0) = s.pos[0];
 	return h_;
 }
-This function would be called during ekf state update, and the output function and its derivatives, the measurement and the measurement noise would be obtained from this one union function
+Funkcja ta będzie wywoływana podczas aktualizacji stanu ekf; z tej jednej funkcji wspólnej pobierana jest funkcja wyjściowa wraz z jej pochodnymi, pomiar i szum pomiaru.
 ```
-6. Instantiate an **esekf** object **kf** and initialize it with initial or default state and covariance.
-(1) initial state and covariance:
+6. Utwórz instancję obiektu **esekf** **kf** i zainicjalizuj go początkowym lub domyślnym stanem i macierzą kowariancji.
+(1) stan początkowy i macierz kowariancji:
 ```
 state init_state;
 esekfom::esekf<state, process_noise_dof, input>::cov init_P;
 esekfom::esekf<state, process_noise_dof, input> kf(init_state,init_P);
 ```
-(2) default state and covariance:
+(2) domyślny stan i macierz kowariancji:
 ```
 esekfom::esekf<state, process_noise_dof, input> kf;
 ```
-7. Deliver the defined models, std int maximum iteration numbers **Maximum_iter**, and the std array for testing convergence **epsi** into the **esekf** object:
+7. Przekaż zdefiniowane modele, maksymalną liczbę iteracji std int **Maximum_iter** oraz tablicę std do testowania zbieżności **epsi** do obiektu **esekf**:
 ```
 double epsi[state_dof] = {0.001};
 fill(epsi, epsi+state_dof, 0.001); // if the absolute of innovation of ekf update is smaller than epso, the update iteration is converged
 kf.init_dyn_share(f, df_dx, df_dw, h_dyn_share, Maximum_iter, epsi);
 ```
-8. In the running time, once an input **in** is received with time interval **dt**, a propagation is executed:
+8. W czasie działania, po otrzymaniu wejścia **in** z przedziałem czasowym **dt**, wykonywana jest propagacja:
 ```
 kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix
 ```
-9. Once a measurement **z** is received, an iterated update is executed:
+9. Po otrzymaniu pomiaru **z** wykonywana jest iterowana aktualizacja:
 ```
 kf.update_iterated_dyn_share();
 ```
 
-*Remarks(2):*
-- The value of the state **x** and the covariance **P** are able to be changed by functions **change_x()** and **change_P()**:
+*Uwagi(2):*
+- Wartości stanu **x** i macierzy kowariancji **P** można zmieniać przy użyciu funkcji **change_x()** i **change_P()**:
 ```
 state set_x;
 kf.change_x(set_x);

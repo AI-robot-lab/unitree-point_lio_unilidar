@@ -1,24 +1,24 @@
-# Version History
+# Historia wersji
 
 ## v1.0.0 (2023.09.22)
-- Adapt `Point-LIO` for `Unitree Lidar L1`
-- Upload codes and dataset
+- Dostosowanie `Point-LIO` do `Unitree Lidar L1`
+- Wgranie kodu i zestawu danych
 
 ## v1.0.1 (2023.10.08)
-- Add video demo
+- Dodanie wideo demonstracyjnego
 
 ## v1.0.2 (2023.11.03)
-- Update launch file in `README.md`
+- Aktualizacja pliku launch w `README.md`
 
 ## v2.0.0 (2024.11.14)
-- Add support for Unitree Lidar L2
+- Dodanie obsługi Unitree Lidar L2
 
 ## v2.0.1 (2024.11.19)
-- Add directory `PCD` for saving pcd files
-- Add odometry topic
-- Modify topic names to unified routines.
-- Add download address for L2 rosbag files
+- Dodanie katalogu `PCD` do zapisywania plików pcd
+- Dodanie tematu odometrii
+- Zmiana nazw tematów na zunifikowane nazewnictwo
+- Dodanie adresów pobierania plików rosbag dla L2
 
 ### v2.0.2 (2025.07.04)
-- Increase downsample size for L2 from 0.1m to 0.4m
-- Modify IMU period from 0.005s to 0.004s
+- Zwiększenie rozmiaru próbkowania w dół dla L2 z 0.1 m do 0.4 m
+- Zmiana okresu IMU z 0.005 s na 0.004 s
